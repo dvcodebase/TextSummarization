@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
   <title>Text Summarizer</title>
@@ -14,5 +14,97 @@
   <h3>Summary:</h3>
   <p>{{ summary }}</p>
   {% endif %}
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link favicon="">
+    <title>Text Summarizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .drag-over { border-color: #3b82f6; background-color: #eff6ff; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+    <div class="rounded-lg p-6 w-full max-w-4xl ">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Text Summarizer</h1>
+
+        <!-- File Upload Form -->
+        <form id="uploadForm" method="POST" action="/summarize" enctype="multipart/form-data" class="mb-6">
+            <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gray-400 transition">
+                <input type="file" id="fileInput" name="file" class="hidden">  <!-- accept=".pdf" -->
+                <p id="dropText" class="text-gray-500">Drag & drop a TXT/PDF file here, or click to select</p>
+            </div>
+            <button id="summarizeBtn" type="submit" class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
+                <span id="btnText">Summarize</span>
+                <span id="spinner" class="spinner hidden ml-2"></span>
+            </button>
+        </form>
+
+        <!-- Summary Display -->
+        {% if summary %}
+        <div id="summarySection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-xl font-semibold text-gray-700">Summary</h2>
+                <button id="copyBtn" class="text-blue-500 hover:text-blue-700 text-sm flex items-center">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-2M8 5V3a2 2 0 012-2h4a2 2 0 012 2v2M8 5h8"></path></svg>
+                    Copy
+                </button>
+            </div>
+            <pre id="summaryText" class="text-gray-600 whitespace-pre-wrap text-sm max-h-96 overflow-y-auto">{{ summary }}</pre>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const dropText = document.getElementById('dropText');
+        const summarizeBtn = document.getElementById('summarizeBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('spinner');
+        const copyBtn = document.getElementById('copyBtn');
+        const summaryText = document.getElementById('summaryText');
+
+        // Drag and drop functionality
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            fileInput.files = e.dataTransfer.files;
+            dropText.textContent = fileInput.files[0]?.name || "Drag & drop a PDF file here, or click to select";
+        });
+        fileInput.addEventListener('change', () => {
+            dropText.textContent = fileInput.files[0]?.name || "Drag & drop a PDF file here, or click to select";
+        });
+
+        // Show spinner on form submission
+        document.getElementById('uploadForm').addEventListener('submit', () => {
+            btnText.textContent = 'Summarizing...';
+            summarizeBtn.disabled = true;
+            spinner.classList.remove('hidden');
+        });
+
+        // Copy summary to clipboard
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(summaryText.textContent).then(() => {
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => copyBtn.innerHTML = '<svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-2M8 5V3a2 2 0 012-2h4a2 2 0 012 2v2M8 5h8"></path></svg>Copy', 2000);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
