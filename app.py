@@ -55,6 +55,7 @@
 
 
 from flask import Flask, render_template, request
+from waitress import serve
 from summarizer import extract_text_from_pdf, summarize_large_text
 import os
 
@@ -65,6 +66,12 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route('/')
 def index():
     return render_template('index.html')
+
+def home():
+    return "Hello from Waitress!"
+
+if __name__ == '__main__':
+    serve(app, host='0.0.0.0', port=8080)
 
 @app.route('/summarize', methods=['POST'])
 def summarize():
