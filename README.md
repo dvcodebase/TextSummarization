@@ -1,5 +1,6 @@
 # ✨ Text Summarization Project
 
+![main_interface](https://github.com/dvcodebase/TextSummarization/blob/main/main_interface.jpg)
 <!-- ![License](https://img.shields.io/badge/license-MIT-green) -->
 <!-- ![Python](https://img.shields.io/badge/Python-3.8%2B-blue) -->
 <!-- ![Hugging Face](https://img.shields.io/badge/HuggingFace-BART-yellow) -->
